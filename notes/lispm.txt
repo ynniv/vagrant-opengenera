@@ -1,0 +1,336 @@
+[from http://www.cliki.net/VLM_on_Linux]
+
+http://labs.aezenix.com/lispm/index.php?title=VLM_On_Linux
+
+VLM On Linux
+From LispMachinery
+Jump to: navigation, search
+
+
+Contents
+
+
+    * 1 Running VLM on Linux
+          o 1.1 What is the VLM?
+          o 1.2 Using the snap4 Port
+          o 1.3 inetd
+          o 1.4 nfs-user-server
+          o 1.5 File Server authentication using the NIS
+          o 1.6 Starting Genera and defining your site
+          o 1.7 Networking the VLM
+          o 1.8 Getting a Meta Key
+          o 1.9 Some Painfully Learned Facts
+
+
+Running VLM on Linux
+
+
+This file gives some additional hints on running the Symbolics Virtual Lisp Machine (VLM) port to 
+Linux/x86_64 by Brad Parker. I am running the VLM on a Ubuntu 6.06.1 host, so whatever I describe 
+here may not work with other distributions. My background is FreeBSD, so some things I describe may 
+be obvious to those with a Linux background. The configuration I describe in this file does not try to 
+provide "security", so by following it, you will potentially expose all files on your Linux host as well as 
+all passwords you may enter into this configuration to the Internet, and beyond.
+
+
+What is the VLM?
+
+
+The VLM is a development by Symbolics that, in a way, represents the last Lisp machine built before 
+Symbolics went bankrupt. It was originally written for the DEC Alpha processor, which was the first 64 
+Bit CPU that was commercially available. A software implementation of the Lisp machine required a 64 
+Bit CPU to attain acceptable performance. The VLM implements the full Lisp machine architecture, so it 
+is largely software compatible to the "real" Symbolics Lisp machines (36xx, Ivory).
+
+
+Brad Parker wrote an implementation of the VLM for Linux. It is based on the Symbolics software, and 
+there is some uncertainty about its legal status as well as the legal status of the rest of Symbolics 
+intellectual property. This seems to mean that redistribution of the software or using it in a commercial 
+context is not possible at the moment.
+
+
+The VLM program is an emulator, it implements the environment for the Lisp machine operating 
+system, Genera, that looks like real hardware from the Lisp side. It supports a virtual ethernet interface 
+and a console. The screen is implemented using the X Window System, so you need to have X11 
+running on your host.
+
+
+Presently, the ethernet interface is hardwired to use the address 10.0.0.1 for the Linux host and 
+10.0.0.2 for the VLM. This cannot be changed. See the section on "Networking the VLM" in this file for 
+some information on how to work with this.
+
+
+Using the snap4 Port
+
+
+First of all, you need to get the VLM for Linux tar ball from 
+http://www.unlambda.com/download/genera/snap4.tar.gz - There may be a newer version, so please 
+check out the base directory and read this file with extra care if you are using a newer version. Unpack 
+the snap4 distribution on your Ubuntu host system. Make sure that you have read the README file in 
+the distribution, at least briefly. This file supplies additional information you'll need.
+
+
+You also want the OpenGenera 2.0 distribution tarball which includes the system sources as well as 
+additional software packages and example files. There is no official distribution site for this tar ball, so 
+you will have to ask around for this. If you have it, unpack it in a directory that you wish to be accessed 
+by the VLM, for example /vlm.
+
+
+My starting point is a plain Ubuntu installation from the 6.06.1 boot CD without any special options. A 
+few packages need to be added in order to make the Linux host system provide the neccessary service 
+to the VLM. Some of these services are found in auxilary package source which need to be enabled in 
+/etc/apt/sources.list (I uncommented all commented-out package sources).
+
+
+$ sudo apt-get update
+
+
+needs to be run after the sources have been enabled in order to refresh the local cache of package names.
+
+
+The following packages are required in addition to the base system:
+
+
+$ sudo apt-get install inetd nfs-common nfs-user-server
+
+
+If "inetd" doesn't work for you, try "netkit-inetd". If "nfs-user-server" doesn't work for you, you probably didn't uncomment the package sources in /etc/apt/sources.list as described above.
+
+
+inetd
+
+
+The Internet superserver is used to provide the VLM with the system date and time during startup. After 
+installation, the following entries in /etc/inetd.conf need to be added or uncommented:
+
+
+$ cat /etc/inetd.conf 
+daytime stream  tcp     nowait  root    internal
+daytime dgram   udp     wait    root    internal
+time            stream  tcp     nowait  root    internal
+time            dgram   udp     wait    root    internal
+
+
+After the file has been updated, restart inetd with
+
+
+$ sudo /etc/init.d/inetd restart
+
+
+nfs-user-server
+
+
+The NFS file server is used to give the VLM access to a file system. In theory, the kernel mode NFS server 
+should give better performance, but I had difficulties getting it to run. After installation, /etc/exports 
+needs to be updated in order to export the host's file system to the VLM by adding a line like:
+
+
+$ cat /etc/exports
+/       10.0.0.2(rw,no_root_squash)
+
+
+Depending on NFS server flavour, you may want to add also the following options after the no_root_squash option to squelch some warnings
+
+
+sync,subtree_check
+
+
+After this has been done, restart the NFS server using
+
+
+$ sudo /etc/init.d/nfs-user-server restart
+
+
+Now verify that your file system is properly exported:
+
+
+$ showmount -e localhost
+
+
+Note that the VLM now has full access to the hosts' file system and can overwrite or delete any file. You 
+may restrict access by exporting only part file system, but I have not tried this. Also note that this 
+example exports the file system to 10.0.0.2, which is the compiled-in address of the VLM. Other 
+systems in the network have no access to the hosts' file system.
+
+
+If you access files from the VLM through NFS using "anonymous" access, the uid 4294967294 and gid 
+4294967294 will be used. These ids are presumably meant to mean "nobody". Add entries to 
+/etc/passwd and /etc/group for this uid and gid in order to have something better than the numeric uid 
+be displayed when listing files on the host system.
+
+
+$ grep lispm /etc/passwd /etc/group
+/etc/passwd:lispm:x:4294967294:4294967294::/tmp:/bin/false
+/etc/group:lispm:x:4294967294:
+
+
+You now have a basic setup that will allow you to start Genera. Skip to "Starting Genera and defining your site" if you are impatient.
+
+
+File Server authentication using the NIS
+
+
+If you want to set up log ins from the VLM to the NFS server on the host system, the VLM needs to get 
+access to the mapping from user ids and group ids to user names and vice versa. When Genera was 
+written, the NIS protocol was commonly used to provide this service within local networks. NIS basically 
+exports the authentication files in the traditional unix format to a local area network.
+
+
+To run NIS, you need the nis package:
+
+
+$ sudo apt-get install nis
+
+
+You need to decide what your NIS domain name will be. This domain name does not need to 
+correspond to your DNS domain name. My NIS domain name is the same as my Genera site name 
+("pharmacy"), but anything else could be used instead. The NIS domain name must be put into the file 
+/etc/defaultdomain:
+
+
+$ cat /etc/defaultdomain
+pharmacy
+
+
+You need to set up your system as NIS master in the file /etc/default/nis:
+
+
+$ grep NISSERVER /etc/default/nis
+NISSERVER=master
+
+
+Your password file needs to use "unix crypt" style passwords instead of the now-common md5 
+passwords. On Ubuntu with the default installation I use, this is configured in the file 
+/etc/pam.d/common-password by commenting out the string "md5":
+
+
+$ grep md5 /etc/pam.d/common-password
+password  required  pam_unix.so nullok obscure min=4 max=8 # md5
+
+
+Note that you will now have to re-set all passwords using the "passwd" command so that they appear in the correct format.
+
+
+The VLM does not support shadow passwords, so you need to convert your password database:
+
+
+$ sudo pwunconv
+$ sudo grpunconv
+
+
+Once all this is done, you have to initialize your NIS database:
+
+
+$ cd /var/yp
+$ sudo make
+
+
+This should leave you with a NIS server that can be used for authentication from the Lisp machine.
+
+
+Starting Genera and defining your site
+
+
+Once you have set up a suitable host environment, you need to configure the .VLM file in the snap4/ 
+directory. (Note: Make sure you are using the .VLM file and not the dot.VLM file!) As distributed, it 
+contains two wrong lines:
+
+
+genera.world: ../symbolics/MIT.vlod
+genera.debugger: ../symbolics/VLM_debugger
+
+
+These should read
+
+
+genera.world: MIT.vlod
+genera.debugger: VLM_debugger
+
+
+Fix the two lines and save the file. Now you are ready to start the VLM by changing your working 
+directory to the snap4/ directory and type:
+
+
+$ sudo ./genera
+
+
+The VLM should start and present you with a welcome screen that asks you to log in. You will then have 
+to define your site, please see the quickstart.text file in the OpenGenera distribution directory for 
+information how to do that.
+
+
+Once you have defined your site, save your world:
+
+
+Command: Reset Network
+Command: Save World :/tmp/my-genera.vlod
+
+
+Replace  by the name of your Linux host, as defined in the Define Site process. The path 
+you specify needs to be writable from the VLM through NFS. If it is not writeable, the VLM will crash and 
+you'll loose the site definition.
+
+
+Networking the VLM
+
+
+As mentioned, the VLM has a fixed network configuration with a private IP address. In order to be able 
+to access hosts in the Internet, your Linux host needs to do network address translation. I used the 
+"firestarter" utility to get a basic configuration running, but this has the drawback that the firewall has 
+to be manually started after the VLM had come up. firestarter creates interface-dependent firewall rules 
+and the tun0 interface, which is used by the VLM, exists only while the VLM runs. I am sure that a 
+better setup can be created by someone who knows more about Linux firewalls, and the best way 
+would be to use a bridge interface in the VLM so that the Linux network stack would be fully 
+circumvented. Maybe in the next release.
+
+
+Getting a Meta Key
+
+
+Try
+
+
+$ xmodmap -e "keysym Alt_L = Meta_L Alt_L"
+$ xmodmap -e "add mod1 = Meta_L"
+
+
+if your left Alt key does not act as a Meta key.
+
+
+(thanks to ecraven)
+
+
+Some Painfully Learned Facts
+
+
+1. The world images that are included in the snap3 and 4 releases won't boot if the system date is after ~2000! y2k thing??
+
+
+2. set genera.network ip in .VLM to 10.0.0.2 *
+
+
+3. when defining world, set the ip address of yourhost to 10.0.0.1 *
+
+
+4. xwindow events from the lvm come through on 10.0.0.1, so xhost +10.0.0.1 is usually needed *
+
+
+5. genera pretty much has to run as root, ymmv but I was didn't figure out how to get it to work otherwise. *
+
+
+6. Recent linux Xwindows implementations leave out some archaic functionality that the VLM requires 
+only when saving world.  If you get everything else set up then find that the VLM hangs during a save 
+world, you may need to try using an older version of your host operating system  (ouch!). *
+
+
+7.  If running your host OS in a virtual machine and having trouble getting a working meta key,
+check that the virtualization software is not munging the keystrokes before they ever get to the X 
+server.  (VMware default key-mappings can be a problem on a Mac keyboard.)
+
+
+* But see
+
+
+Tested/working configurations:
+Pentium D system with 2 gig of memory running ubuntu 7.04 64 bit desktop
+VMware fusion on Mac Pro running ubuntu 7.04 64bit desktop

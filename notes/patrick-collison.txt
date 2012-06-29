@@ -1,0 +1,64 @@
+[from http://patrickcollison.com/blog/2008/04/lisp-machines]
+
+The Lisp Machines were easily the best environments ever created for developing in Lisp, but the companies that produced them died out quite a while ago (Dan Weinreb has described some of the reasons for this). They weren’t just great tools for writing Lisp—Genera is one of the best environments for writing code that’s been created for any language. Squeak is the only thing I’ve seen that comes close.
+
+Although the current legal status of the IP around the Lisp Machines is unclear, you can now get your hands on the source, and run the environment pretty easily on a 64-bit Linux installation (or even OS X + VMWare + Linux)—credit for the Linux port goes to Brad Parker.
+
+Setting it up isn’t exactly a point-and-click operation, and guides are non-existent (I think)—so here’s what I did to get it up and running on OS X using VMWare and Ubuntu 7.10 x86-64 (this may clobber other things; I’m assuming a dedicated Ubuntu installation):
+curl -o og.torrent http://torrents.thepiratebay.org/3769989/Symbolics_Open_Genera_2.0_for_Alpha_-_complete_package_with_Lisp.3769989.TPB.torrent
+rtorrent og.torrent
+tar xfj opengenera2.tar.bz2
+
+curl -O http://www.unlambda.com/download/genera/snap4.tar.gz
+tar xfz snap4.tar.gz
+
+apt-get install xorg nfs-common nfs-user-server inetutils-inetd
+
+cat <<EOF > /etc/inetd.conf
+daytime stream tcp nowait root internal
+daytime dgram udp wait root internal
+time stream tcp nowait root internal
+time dgram udp wait root internal
+EOF
+
+/etc/init.d/inetutils-inetd restart
+
+hostname genera-host
+
+cat <<EOF > /etc/hosts
+10.0.0.2 genera
+10.0.0.1 genera-host
+EOF
+
+echo “/ genera(rw,no_root_squash)” > /etc/exports
+/etc/init.d/nfs-user-server restart
+
+cd snap4
+
+cat <<EOF > .VLM
+genera.network: 10.0.0.2; mask=255.255.255.0; gateway=10.0.0.1
+genera.virtualMemory: 2048
+genera.world: Genera-8-5.vlod
+genera.debugger: VLM_debugger
+genera.coldLoad.geometry: 800×600
+EOF
+
+SDIR=/var/lib/symbolics
+mkdir $SDIR
+# you could just link below, but I want keep a clean copy somewhere
+cp -R ../og2/sys.sct $SDIR
+mkdir $SDIR/rel-8-5
+ln -s $SDIR/sys.sct $SDIR/rel-8-5/sys.sct
+
+./genera
+
+Once you’re in the Genera environment, evaluate the following:
+Define Site foo
+Namespace server name: genera
+Unix Host Name: genera-host
+Login
+Login: Lisp-Machine
+
+To test things out, you can evaluate something like Edit Definition read-from-string, which should pull the source for read-from-string from the Linux host over NFS. If you edit the definition, load it with M-x Compile Changed Definitions. If it all works, congratulations; you now have a fully-functioning Genera 8.5 environment.
+
+Genera itself is excellently documented (just fire up the Document Examiner), but the emulator has very sparse docs. I’ll post some more soon with further details about day-to-day use—keybindings, etc.

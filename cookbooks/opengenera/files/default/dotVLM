@@ -1,0 +1,5 @@
+genera.network: 10.0.0.2; mask=255.255.255.0; gateway=10.0.0.1
+genera.virtualMemory: 2048
+genera.world: Genera-8-5.vlod
+genera.debugger: VLM_debugger
+genera.coldLoad.geometry: 800×600
