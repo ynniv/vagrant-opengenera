@@ -1,7 +1,7 @@
 require_recipe "apt"
 
 execute "install base packages" do
-  command "apt-get install -y vnc4server nfs-common nfs-user-server inetutils-inetd"
+  command "apt-get install -y vnc4server nfs-common nfs-user-server inetutils-inetd blackbox"
 end
 
 execute "expand opengenera" do
@@ -72,7 +72,7 @@ cookbook_file "/root/.vnc/xstartup" do
 end
 
 execute "allow global write to genera files" do
-  command "chmod o+w -R /var/lib/symbolics/sys.sct"
+  command "chmod ugo+w -R /var/lib/symbolics/sys.sct"
 end
 
 execute "clear vnc.pid on startup" do
