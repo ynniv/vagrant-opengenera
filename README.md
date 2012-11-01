@@ -28,5 +28,5 @@ Enjoy!
 
 http://www.textfiles.com/bitsavers/pdf/symbolics/
 
-![splash screen](http://raw.github.com/ynniv/opengenera/master/screenshots/splash%20screen.png) 
-![documentation viewer](http://raw.github.com/ynniv/opengenera/master/screenshots/documentation%20viewer.png) 
+![splash screen](http://github.com/ynniv/opengenera/raw/master/screenshots/splash%20screen.png) 
+![documentation viewer](http://github.com/ynniv/opengenera/raw/master/screenshots/documentation%20viewer.png) 
