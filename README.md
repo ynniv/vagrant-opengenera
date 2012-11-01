@@ -10,7 +10,7 @@ This will create an ubuntu-8.04.4-server-amd64 drive image that is staged for us
 
 After the server is running, you can use opengenera by opening:
 
-    vnc://localhost:5902
+    vnc://localhost:5902 password "genera"
 
 Open Genera setup:
 
