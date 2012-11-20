@@ -11,7 +11,7 @@ end
 
 execute "download snap4" do
   creates "/vagrant/snap4.tar.gz"
-  command "curl -O http://www.unlambda.com/download/genera/snap4.tar.gz"
+  command "cd /vagrant; curl -O http://www.unlambda.com/download/genera/snap4.tar.gz"
 end
 
 execute "expand snap4" do
