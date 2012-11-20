@@ -6,7 +6,8 @@ all: $(BOXNAME) opengenera2.tar.bz2
 
 clean:
 	vagrant destroy
-	rm -f $(BOXNAME).box
+	rm -f $(BOXNAME).box snap4.tar.gz
+	echo "the iso directory can be removed"
 
 # vagrant is a tool for automating virtualbox
 vagrant:
@@ -27,11 +28,11 @@ veewee: vagrant
 
 $(BOXNAME).box: veewee
 	echo "### need to build $(BOXNAME).box"
-	vagrant basebox build --force $(BOXNAME);
-	vagrant basebox halt $(BOXNAME);
-	vagrant basebox up --nogui $(BOXNAME);
-	vagrant basebox validate $(BOXNAME);
-	vagrant basebox export   $(BOXNAME);
+	vagrant basebox build --force $(BOXNAME)
+	vagrant basebox halt $(BOXNAME)
+	vagrant basebox up --nogui $(BOXNAME)
+	vagrant basebox validate $(BOXNAME)
+	vagrant basebox export   $(BOXNAME)
 
 # test that the base box is installed. make it if not.
 $(BOXNAME): vagrant
