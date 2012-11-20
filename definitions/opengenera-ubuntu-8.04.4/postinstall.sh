@@ -2,9 +2,18 @@
 
 date > /etc/vagrant_box_build_time
 
+# Apt-install various things necessary for Ruby, guest additions,
+# etc., and remove optional things to trim down the machine.
+apt-get -y update
+apt-get -y upgrade
+apt-get -y install linux-headers-$(uname -r) build-essential
+apt-get -y install zlib1g-dev libssl-dev libreadline5-dev nfs-common
+apt-get -y install vim
+apt-get clean
+
 #Installing the virtualbox guest additions
 echo "Installing the virtualbox guest additions"
-apt-get -y install dkms linux-kernel-devel linux-source linux-headers-$(uname -r) build-essential
+apt-get -y install dkms
 VBOX_VERSION=$(cat /home/vagrant/.vbox_version)
 mount -o loop VBoxGuestAdditions_$VBOX_VERSION.iso /mnt
 sh /mnt/VBoxLinuxAdditions.run
@@ -13,12 +22,8 @@ umount /mnt
 rm VBoxGuestAdditions_$VBOX_VERSION.iso
 echo "completed virtualbox guest additions"
 
-#Updating the box
-echo "Updating the box"
-apt-get -y update
-apt-get -y install zlib1g-dev libssl-dev libreadline5-dev nfs-common
-apt-get clean
-echo "completed updating the box"
+# Install NFS client
+apt-get -y install nfs-common
 
 #Setting up sudo
 echo "setting up sudo"
@@ -26,14 +31,29 @@ cp /etc/sudoers /etc/sudoers.orig
 sed -i -e 's/%admin ALL=(ALL) ALL/%admin ALL=NOPASSWD:ALL/g' /etc/sudoers
 echo "completed setting up sudo"
 
-#Installing ruby
+# Install Ruby from source in /opt so that users of Vagrant
+# can install their own Rubies using packages or however.
 echo "installing ruby"
-wget http://rubyforge.org/frs/download.php/71096/ruby-enterprise-1.8.7-2010.02.tar.gz
-tar xzf ruby-enterprise-1.8.7-2010.02.tar.gz
-./ruby-enterprise-1.8.7-2010.02/installer -a /opt/ruby --no-dev-docs --dont-install-useful-gems
-echo 'PATH=$PATH:/opt/ruby/bin/'> /etc/profile.d/rubyenterprise.sh
-rm -rf ./ruby-enterprise-1.8.7-2010.02/
-rm ruby-enterprise-1.8.7-2010.02.tar.gz
+wget http://ftp.ruby-lang.org/pub/ruby/1.9/ruby-1.9.2-p290.tar.gz
+tar xzf ruby-1.9.2-p290.tar.gz
+cd ruby-1.9.2-p290
+./configure --prefix=/opt/ruby
+make
+make install
+cd ..
+rm -rf ruby-1.9.2-p290
+
+# Install RubyGems 1.7.2
+wget http://production.cf.rubygems.org/rubygems/rubygems-1.8.24.tgz
+tar xzf rubygems-1.8.24.tgz
+cd rubygems-1.8.24
+/opt/ruby/bin/ruby setup.rb
+cd ..
+rm -rf rubygems-1.8.24
+
+# Add /opt/ruby/bin to the global path as the last resort so
+# Ruby, RubyGems, and Chef/Puppet are visible
+echo 'PATH=$PATH:/opt/ruby/bin/'> /etc/profile.d/vagrantruby.sh
 echo "completed installating ruby"
 
 #Installing chef & Puppet
@@ -54,7 +74,7 @@ echo "completed installing vagrant keys"
 
 # Remove items used for building, since they aren't needed anymore
 echo "removing development packages"
-apt-get -y remove linux-kernel-devel linux-headers-$(uname -r) build-essential
+apt-get -y remove linux-headers-$(uname -r) build-essential
 apt-get -y autoremove
 echo "completed removing development packages"
 
