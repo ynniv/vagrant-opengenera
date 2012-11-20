@@ -1,3 +1,7 @@
 
 opengenera2.tar.bz2
 iso
+
+.vagrant
+opengenera-ubuntu-8.04.4.box
+
