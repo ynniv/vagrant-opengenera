@@ -1,7 +1,7 @@
 # -*- mode: ruby; -*-
 
 Vagrant::Config.run do |config|
-  config.vm.box = "ubuntu-8.04.4-server-amd64"
+  config.vm.box = "opengenera"
   config.vm.customize [
     "modifyvm", :id,
     "--memory", "1024"
