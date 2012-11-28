@@ -1,7 +1,7 @@
 require_recipe "apt"
 
 execute "install base packages" do
-  command "apt-get install -y vnc4server nfs-common nfs-user-server inetutils-inetd blackbox"
+  command "apt-get install -y curl vnc4server nfs-common nfs-user-server inetutils-inetd blackbox"
 end
 
 execute "expand opengenera" do
@@ -11,7 +11,7 @@ end
 
 execute "download snap4" do
   creates "/vagrant/snap4.tar.gz"
-  command "curl -O http://www.unlambda.com/download/genera/snap4.tar.gz"
+  command "cd /vagrant; curl -O http://www.unlambda.com/download/genera/snap4.tar.gz"
 end
 
 execute "expand snap4" do
