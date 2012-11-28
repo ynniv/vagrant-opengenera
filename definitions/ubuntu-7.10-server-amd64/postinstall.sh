@@ -1,12 +1,18 @@
 #http://adrianbravo.tumblr.com/post/644860401
 
+set -e
+
 date > /etc/vagrant_box_build_time
 
 # ideally this would be excluded in the preseed
-grep -v cdrom /etc/apt/sources.list > /etc/apt/sources.list
+sed -i.bak 's/^.*cdrom.*$//g' /etc/apt/sources.list
+apt-get -y update
+
+cat /etc/apt/sources.list
+apt-cache search linux-headers
+apt-cache search zlib1g-dev
 
 #Updating the box
-apt-get -y update
 apt-get -y install linux-headers-$(uname -r) build-essential
 apt-get -y install zlib1g-dev libssl-dev libreadline5-dev nfs-common
 apt-get clean
@@ -18,8 +24,9 @@ sed -i -e 's/%admin ALL=(ALL) ALL/%admin ALL=NOPASSWD:ALL/g' /etc/sudoers
 #Installing ruby
 wget http://rubyforge.org/frs/download.php/71096/ruby-enterprise-1.8.7-2010.02.tar.gz
 tar xzvf ruby-enterprise-1.8.7-2010.02.tar.gz
+mkdir -p /opt/ruby/lib/ruby/gems/1.8/gems
 ./ruby-enterprise-1.8.7-2010.02/installer -a /opt/ruby --no-dev-docs --dont-install-useful-gems
-echo 'PATH=$PATH:/opt/ruby/bin/'> /etc/profile.d/rubyenterprise.sh
+echo 'PATH=$PATH:/opt/ruby/bin/'>> /etc/profile
 rm -rf ./ruby-enterprise-1.8.7-2010.02/
 rm ruby-enterprise-1.8.7-2010.02.tar.gz
 
@@ -59,14 +66,13 @@ rm /var/lib/dhcp3/*
 echo "cleaning up udev rules"
 rm /etc/udev/rules.d/70-persistent-net.rules
 mkdir /etc/udev/rules.d/70-persistent-net.rules
-rm -rf /dev/.udev/
-rm /lib/udev/rules.d/75-persistent-net-generator.rules
+rm -r /dev/.udev/
+rm /etc/udev/rules.d/75-persistent-net-generator.rules
 
 echo "Adding a 2 sec delay to the interface up, to make the dhclient happy"
 echo "pre-up sleep 2" >> /etc/network/interfaces
 
 # Zero out the free space to save space in the final image:
-dd if=/dev/zero of=/EMPTY bs=1M
-rm -f /EMPTY
+dd if=/dev/zero of=/EMPTY bs=1M || rm -f /EMPTY || true
 
 exit
