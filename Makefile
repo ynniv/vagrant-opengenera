@@ -27,10 +27,10 @@ $(BASEBOX).box:
 	  echo "### need to install veewee"; \
 	  echo "try: sudo gem install veewee"; \
 	else \
-	  echo "### need to build $(BASEBOX).box" \
-	  vagrant basebox build --force $(BASEBOX) \
-	  vagrant basebox validate $(BASEBOX) \
-	  vagrant basebox export   $(BASEBOX) \
+	  echo "### need to build $(BASEBOX).box"; \
+	  vagrant basebox build --force $(BASEBOX); \
+	  vagrant basebox validate $(BASEBOX); \
+	  vagrant basebox export   $(BASEBOX); \
 	fi
 
 # test that the opengenera box is installed. make it if not.
