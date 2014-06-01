@@ -1,22 +1,32 @@
-require_recipe "apt"
 
-execute "install base packages" do
-  command "apt-get install -y curl vnc4server nfs-common nfs-user-server inetutils-inetd blackbox"
+execute "apt-get-update" do
+  command "apt-get update"
+  ignore_failure true
+  not_if do ::File.exists?('/var/lib/apt/periodic/update-success-stamp') end
 end
 
-execute "expand opengenera" do
+packages = %w|curl vnc4server nfs-common nfs-server inetutils-inetd blackbox|
+
+packages.each do |pkg|
+  package pkg
+end
+
+execute "expand-opengenera" do
+  cwd "/opt"
   creates "/opt/og2"
-  command "cd /opt; tar xfj /vagrant/opengenera2.tar.bz2"
+  command "tar xfj /vagrant/opengenera2.tar.bz2"
 end
 
 execute "download snap4" do
+  cwd "/vagrant"
   creates "/vagrant/snap4.tar.gz"
-  command "cd /vagrant; curl -O http://www.unlambda.com/download/genera/snap4.tar.gz"
+  command "curl -O http://www.unlambda.com/download/genera/snap4.tar.gz"
 end
 
 execute "expand snap4" do
+  cwd "/opt"
   creates "/opt/snap4"
-  command "cd /opt; tar xfz /vagrant/snap4.tar.gz"
+  command "tar xvfz /vagrant/snap4.tar.gz"
 end
 
 cookbook_file "/etc/inetd.conf" do
@@ -43,7 +53,7 @@ cookbook_file "/etc/exports" do
 end
 
 execute "bounce nfs" do
-  command "/etc/init.d/nfs-user-server restart"
+  command "/etc/init.d/nfs-kernel-server restart"
 end
 
 cookbook_file "/opt/snap4/.VLM" do
