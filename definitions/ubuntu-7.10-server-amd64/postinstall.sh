@@ -91,7 +91,8 @@ do
       ;; 
   esac 
 done 
-/usr/bin/sudo-real $arglist
+
+/usr/bin/sudo-real $arglist || exit $?
 LITERAL
 
 # Zero out the free space to save space in the final image:

@@ -1,4 +1,4 @@
-Runs "opengenera2" inside virtualbox using vagrant, veewee, and chef.
+Runs "opengenera2" on Ubuntu 7.10 inside virtualbox using vagrant, veewee, and chef. An old version of Ubuntu is required due to a "feature" of X11 being fixed in newer versions.
 
 This *does not include* genera. It requires that you supply a bzip2 tar archive named opengenera.tar.bz2 with the (abridged) files listed in notes/opengenera2.tar.list.
 
@@ -6,7 +6,7 @@ To launch a virtualbox VM running genera, run
 
     make && vagrant up
 
-This will create an ubuntu-8.04.4-server-amd64 drive image that is staged for use with vagrant. Practically this means sizing a new disk image, installing the OS with specific settings, installing some base ruby packages, creating a vagrant user, etc (http://vagrantup.com/v1/docs/base_boxes.html). Vagrant will then launch this image in virtual box and set up port forwarding (2222 -> vm 22, 5902 -> vm 5901). On launch, chef-solo is used to evaluate the opengenera cookbook, which jumps through some hoops to set up opengenera (see notes/*), and run it inside a VNC session.
+This will create an ubuntu-7.10-server-amd64 drive image that is staged for use with vagrant. Practically this means sizing a new disk image, installing the OS with specific settings, installing some base ruby packages, creating a vagrant user, etc (http://vagrantup.com/v1/docs/base_boxes.html). Vagrant will then launch this image in virtual box and set up port forwarding (2222 -> vm 22, 5902 -> vm 5901). On launch, chef-solo is used to evaluate the opengenera cookbook, which jumps through some hoops to set up opengenera (see notes/*), and run it inside a VNC session.
 
 After the server is running, you can use opengenera by opening:
 
