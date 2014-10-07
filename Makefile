@@ -23,14 +23,14 @@ vagrant:
 .PRECIOUS: %.iso
 
 $(BASEBOX).box:
-	if test -z "$$(bash -c 'vagrant basebox' 2>&1 | grep 'vagrant basebox <command> ')" ; then \
+	if test -z "$$(which veewee)" ; then \
 	  echo "### need to install veewee"; \
 	  echo "try: sudo gem install veewee"; \
 	else \
 	  echo "### need to build $(BASEBOX).box"; \
-	  vagrant basebox build --force $(BASEBOX); \
-	  vagrant basebox validate $(BASEBOX); \
-	  vagrant basebox export   $(BASEBOX); \
+	  veewee vbox build --force $(BASEBOX); \
+	  veewee vbox validate $(BASEBOX); \
+	  veewee vbox export   $(BASEBOX); \
 	fi
 
 # test that the opengenera box is installed. make it if not.

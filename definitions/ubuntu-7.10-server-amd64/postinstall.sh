@@ -22,13 +22,15 @@ cp /etc/sudoers /etc/sudoers.orig
 sed -i -e 's/%admin ALL=(ALL) ALL/%admin ALL=NOPASSWD:ALL/g' /etc/sudoers
 
 #Installing ruby
-wget http://rubyforge.org/frs/download.php/71096/ruby-enterprise-1.8.7-2010.02.tar.gz
-tar xzvf ruby-enterprise-1.8.7-2010.02.tar.gz
+#wget http://rubyforge.org/frs/download.php/71096/ruby-enterprise-1.8.7-2010.02.tar.gz
+RUBY_VERSION=ruby-enterprise-1.8.7-2012.02
+wget http://rubyenterpriseedition.googlecode.com/files/${RUBY_VERSION}.tar.gz
+tar xzvf ${RUBY_VERSION}.tar.gz
 mkdir -p /opt/ruby/lib/ruby/gems/1.8/gems
-./ruby-enterprise-1.8.7-2010.02/installer -a /opt/ruby --no-dev-docs --dont-install-useful-gems
+./${RUBY_VERSION}/installer -a /opt/ruby --no-dev-docs --dont-install-useful-gems
 echo 'PATH=$PATH:/opt/ruby/bin/'>> /etc/profile
-rm -rf ./ruby-enterprise-1.8.7-2010.02/
-rm ruby-enterprise-1.8.7-2010.02.tar.gz
+rm -rf ./${RUBY_VERSION}/
+rm ${RUBY_VERSION}.tar.gz
 
 #Installing chef & Puppet
 /opt/ruby/bin/gem install chef --no-ri --no-rdoc
@@ -71,6 +73,26 @@ rm /etc/udev/rules.d/75-persistent-net-generator.rules
 
 echo "Adding a 2 sec delay to the interface up, to make the dhclient happy"
 echo "pre-up sleep 2" >> /etc/network/interfaces
+
+mv /usr/bin/sudo /usr/bin/sudo-real
+tee /usr/bin/sudo <<'LITERAL'
+while 
+  case "$@" in 
+    '') false 
+      ;; 
+  esac 
+do 
+  case "$1" in 
+    -E) 
+        shift ; shift 
+      ;; 
+     *) arglist="$arglist $1" 
+        shift 
+      ;; 
+  esac 
+done 
+/usr/bin/sudo-real $arglist
+LITERAL
 
 # Zero out the free space to save space in the final image:
 dd if=/dev/zero of=/EMPTY bs=1M || rm -f /EMPTY || true
