@@ -1,7 +1,7 @@
 require_recipe "apt"
 
 execute "install base packages" do
-  command "apt-get install -y curl vnc4server nfs-common nfs-user-server inetutils-inetd blackbox"
+  command "apt-get install -y curl vnc4server nfs-common nfs-user-server inetutils-inetd ratpoison xterm"
 end
 
 execute "expand opengenera" do

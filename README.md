@@ -15,7 +15,7 @@ After the server is running, you can use opengenera by opening:
 Open Genera setup:
 
     "login Lisp-Machine"
-    "define site <sitename>"
+    "define site <Something Fancy>"
     Left click value of "Namespace Server Name". Change to "genera"
     Left click value of "Unix Host Name". Change to "genera-host"
     Left click "<end> uses these values"
