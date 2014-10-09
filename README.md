@@ -22,7 +22,7 @@ Open Genera setup:
     Type return to login anonymously
     ":reset network"
     
-    ;;; "save world" ; not working :(
+    ;;; "save world" ; not working, but you're in a VM that can be paused
 
 Enjoy!
 

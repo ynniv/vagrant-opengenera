@@ -2,28 +2,24 @@
 
 You will need a three button mouse. This can be emulated on a Mac laptop by using BetterTouchTool to add a gesture making "Three Finger [Tap or Click]" activate "Middle Click".
 
-Genera is infamous for having a keyboard with a lot of modifier keys. Fortunately Open Genera treats the left and right modifiers differently to provide most of them on a modern keyboard.
+Genera is infamous for having a keyboard with a lot of modifier keys. Fortunately Open Genera treats the left and right modifiers differently to provide most of them on a modern keyboard. In addition, the Alpha-on-x86 emulation layer (snap4) provides some remappings. The end result is something like this:
 
-    <Control> [Either Control]
-    <Shift>   [Either Shift]
-    <Meta>    [Left Option / Alt]
-    <Super>   [Left Super]
-    <Hyper>   [Right Option / Alt]
-    <Symbol>  [Right Super]
+    <Control>  [Control]
+    <Shift>    [Shift]
+    <Meta>     [Left Alt]
+    <Super>    [Right Alt]
+    <Symbol>   [Right Super]
+    <Hyper>    [No Binding]
 
-You are separated from Open Genera by an x86 emulation layer called snap4. Some remapping is done at this layer:
-
-    <Select>   is [F1]
-    <Function> is [F3]
-    <Suspend>  is [F4]
-    <Resume>   is [F5]
-    <Abort>    is [F6]
-    <Square>   is [F7]
-    <Help>     is [F12]
+    <Select>   [F1]
+    <Function> [F3]
+    <Suspend>  [F4]
+    <Resume>   [F5]
+    <Abort>    [F6]
+    <Square>   [F7]
+    <Help>     [F12]
     
-    <Rubout>   is [Delete] (not Backspace)
-    <Abort>    is [Keypad Minus]
-    <Super>    is [Right Control]
+    <Rubout>   [Delete] (not the key next to Equals)
 
 You are also separated from Open Genera by a VNC session. Inside this session there are three windows managed by ratpoison (a keyboard oriented window manager).
 
@@ -34,18 +30,17 @@ You are also separated from Open Genera by a VNC session. Inside this session th
 
     C-t ? shows the ratpoison help screen
 
-The VNC server also addionally remaps some keys for convenience:
-    
-    
+### Mac Tips
 
-On Mac OSX you can connect to the VNC session via the Finder by pressing Command-K and connecting to "vnc://localhost:5902". While this is convenient, you will be better served by RealVNC, which has a super-expert-advanced setting that will cause Left Command to send Super_L and Right Command to send Super_R. YOU WANT THIS. You can also use FunctionFlip to 
+You can connect to the VNC session via the Finder by pressing Command-K and connecting to "vnc://localhost:5902". While this is convenient, you will be better served by RealVNC, which has a super-expert-advanced setting that will allow you to map Left Option to Alt_L (Meta) and Right Option to Alt_R (Super). YOU WANT THESE.
+
+On a laptop the fn key turns Backspace into Delete (IMPORTANT), Left Arrow into Home, Right Arrow into End, Up Arrow into Page Up, and Down Arrow into Page Down.
 
 ## Switching Applications in Genera
 
 Type &lt;Select> ([F1]) followed by:
 
     [=] SELECT Key Selector
-    [%] Metering Interface
     [C]onverse
     [D]ocument Examiner
     [E]ditor (Zmacs)
