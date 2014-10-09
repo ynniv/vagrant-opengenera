@@ -81,5 +81,5 @@ end
 
 execute "start opengenera under vnc" do
   creates "/root/.vnc/genera-host:1.pid"
-  command "vncserver"
+  command "vncserver -geometry 1150x900"
 end
