@@ -55,7 +55,7 @@ if [[ ! -d "/var/lib/symbolics" ]]; then
   cp -R /opt/og2/sys.sct $SDIR; 
   mkdir $SDIR/rel-8-5; 
   ln -s $SDIR/sys.sct $SDIR/rel-8-5/sys.sct; 
-  cp /vagrant/run-genera $SDIR;
+  cp $PFILES/run-genera $SDIR;
 fi
 
 echo "/root/.vnc"
