@@ -21,4 +21,5 @@ sleep 2
 xterm &
 
 cd /var/lib/symbolics
-xterm -e ./genera -geometry 1150x900 &
+xterm -e /var/lib/symbolics/run-genera &
+

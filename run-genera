@@ -1,0 +1,4 @@
+#!/bin/bash
+
+cd /var/lib/symbolics
+./genera -geometry 1150x900 2>&1 | tee genera.log
