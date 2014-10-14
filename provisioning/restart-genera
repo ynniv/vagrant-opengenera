@@ -1,0 +1,9 @@
+#!/bin/bash
+
+wd=/var/lib/symbolics
+pidfile="$wd/genera.pid"
+exec="$wd/genera"
+sudo /sbin/start-stop-daemon --stop --exec "$exec" --quiet
+sleep 2
+sudo /sbin/start-stop-daemon --stop --signal 7 --quiet --oknodo --exec "$exec" && sleep 2
+$wd/run-genera

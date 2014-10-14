@@ -56,6 +56,9 @@ if [[ ! -d "/var/lib/symbolics" ]]; then
   mkdir $SDIR/rel-8-5; 
   ln -s $SDIR/sys.sct $SDIR/rel-8-5/sys.sct; 
   cp $PFILES/run-genera $SDIR;
+  ln -s $SDIR/run-genera /usr/local/bin
+  cp $PFILES/restart-genera $SDIR
+  ln -s $SDIR/restart-genera /usr/local/bin
 fi
 
 echo "/root/.vnc"
@@ -72,6 +75,7 @@ chmod ugo+w -R /var/lib/symbolics/sys.sct
 
 echo "clear vnc.pid on startup"
 echo 'rm -f /root/.vnc/genera-host:1.pid' > /etc/rc.local
+echo 'HOME=/root vncserver -geometry 1150x900' >> /etc/rc.local
 
 echo "start opengenera under vnc"
 if [[ ! -f "/root/.vnc/genera-host:1.pid" ]]; then

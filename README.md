@@ -15,28 +15,34 @@ To launch a virtualbox VM running genera:
 
   * ```make && vagrant up```
 
-This will create an ubuntu-7.10-server-amd64 drive image that is staged for use with vagrant. Practically this means sizing a new disk image, installing the OS with specific settings, installing some base ruby packages, creating a vagrant user, etc (http://vagrantup.com/v1/docs/base_boxes.html). Vagrant will then launch this image in virtual box and set up port forwarding (2222 -> vm 22, 5902 -> vm 5901). On launch, provision.sh jumps through some hoops to set up opengenera (see notes/*), and run it inside a VNC session.
+This will create an ubuntu-7.10-server-amd64 drive image that is staged for use with vagrant. Practically this means sizing a new disk image, installing the OS with specific settings, installing some base ruby packages, creating a vagrant user, etc (http://vagrantup.com/v1/docs/base_boxes.html). Vagrant will then launch this image in virtual box and set up port forwarding (2222 -> vm 22, 5902 -> vm 5901). On launch, provision.sh jumps through some hoops to set up Open Genera (see notes/*), and run it inside a VNC session.
 
 ## Get Set
-After the server is running, you can use opengenera by opening:
+After the server is running, you can use Open Genera by opening:
 
     vnc://localhost:5902 password "genera"
 
-Open Genera setup:
+If OG failed to launch successfully you will only see a white screen with a black status bar at the bottom. If this happens it will probably restart successfully using:
+
+    vagrant ssh -c restart-genera
+
+On a successful launch you will have a screen filled with pleasantly styled text. You should then configure the system as follows:
 
     "login Lisp-Machine"
     "define site <Something Fancy>"
     Left click value of "Namespace Server Name". Change to "genera"
     Left click value of "Unix Host Name". Change to "genera-host"
-    Left click "<end> uses these values"
-    Type return to login anonymously
+    Left click "<end> uses these values" (or type <End>)
+    If prompted, type return to login anonymously
     ":reset network"
     
-    ;;; "save world" ; not working, but you're in a VM that can be paused
-
 ## Go!
 
 [Tour](TOUR.md)
+
+## Caveats
+
+```Save World``` will not succeed, and if it does it will not restore, and if it does then you are a lucky user! Fortunately everything is inside VirtualBox, which will let you pause, resume, and snapshot the world. While not as satisfying as using the original mechanisms, these VirtualBox capabilities are more powerful than the originals.
 
 # Additional Reading
 

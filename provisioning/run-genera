@@ -1,4 +1,9 @@
 #!/bin/bash
 
-cd /var/lib/symbolics
-./genera -geometry 1150x900 2>&1 | tee genera.log
+wd=/var/lib/symbolics
+cmd="HOME=/root DISPLAY=:1 ./genera -geometry 1150x900 2>&1 > genera.log"
+pidfile="$wd/genera.pid"
+exec="$wd/genera"
+sudo /sbin/start-stop-daemon --start --background --quiet --oknodo \
+			--chdir "$wd" --exec "$exec" --startas /bin/bash -- -c "$cmd"
+
