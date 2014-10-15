@@ -6,6 +6,7 @@ VAGRANTFILE_API_VERSION = "2"
 Vagrant.configure(VAGRANTFILE_API_VERSION) do |config|
   config.vm.box = "opengenera"
   config.vm.network "forwarded_port", guest: 5901, host: 5902
+  config.vm.boot_timeout = 1200 # normal timeout is 300 seconds
 
   config.vm.provider "virtualbox" do |vb|
     vb.customize ["modifyvm", :id, "--memory", "1024"]
