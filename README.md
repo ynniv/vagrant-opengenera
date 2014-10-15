@@ -38,7 +38,7 @@ On a successful launch you will have a screen filled with pleasantly styled text
     
 ## Go!
 
-[Tour](TOUR.md)
+See [TOUR](TOUR.md) for a quick guide on how to get started with the included user's guide.
 
 ## Caveats
 
