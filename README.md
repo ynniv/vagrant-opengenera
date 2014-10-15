@@ -26,7 +26,7 @@ If OG failed to launch successfully you will only see a white screen with a blac
 
     vagrant ssh -c restart-genera
 
-On a successful launch you will have a screen filled with pleasantly styled text. You should then configure the system as follows:
+On a successful launch you will have a screen filled with pleasantly styled text. The resolution will be 1150x900, which was the native resolution of the Symbolics 3600. You should then configure the system as follows:
 
     "login Lisp-Machine"
     "define site <Something Fancy>"
@@ -48,5 +48,6 @@ On a successful launch you will have a screen filled with pleasantly styled text
 
 http://www.textfiles.com/bitsavers/pdf/symbolics/
 
-![splash screen](http://github.com/ynniv/opengenera/raw/master/screenshots/splash%20screen.png) 
-![documentation viewer](http://github.com/ynniv/opengenera/raw/master/screenshots/documentation%20viewer.png) 
+![splash screen](https://github.com/ynniv/opengenera/raw/master/screenshots/splash%20screen.png)
+![documentation viewer](https://github.com/ynniv/opengenera/raw/master/screenshots/document%20examiner.png) 
+![graphical program output](https://github.com/ynniv/opengenera/raw/master/screenshots/sample%20program.png)
