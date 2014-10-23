@@ -6,6 +6,10 @@ Runs "opengenera2" on Ubuntu 7.10 inside virtualbox using vagrant, veewee, and c
 
 This *does not include* genera. It requires that you supply a bzip2 tar archive named opengenera.tar.bz2 with the (abridged) files listed in notes/opengenera2.tar.list.
 
+## Updating
+
+If you are updating you probably need to destroy your previous virtual machine as well as the Ubuntu 7.10 basebox using ```make clean```.
+
 ## Get Ready
 To launch a virtualbox VM running genera:
 
@@ -16,6 +20,8 @@ To launch a virtualbox VM running genera:
   * ```make && vagrant up```
 
 This will create an ubuntu-7.10-server-amd64 drive image that is staged for use with vagrant. Practically this means sizing a new disk image, installing the OS with specific settings, installing some base ruby packages, creating a vagrant user, etc (http://vagrantup.com/v1/docs/base_boxes.html). This takes approximately a half hour on a Core 2 Duo. Vagrant will then launch this image in virtual box and set up port forwarding (2222 -> vm 22, 5902 -> vm 5901). On launch, provision.sh jumps through some hoops to set up Open Genera (see notes/*), and run it inside a VNC session.
+
+Building the image involves pulling files from the Internet, which introduces uncertainty. If you're having trouble completing this step, compare your build output with one possible successful output at ```notes/full-make.log```.
 
 ## Get Set
 After the server is running, you can use Open Genera by opening:

@@ -9,6 +9,7 @@ all: opengenera-box opengenera2.tar.bz2
 
 clean:
 	vagrant destroy
+	vagrant box remove opengenera
 	rm -f *.box snap4.tar.gz
 	echo "the iso directory can be removed"
 
