@@ -79,5 +79,5 @@ echo 'HOME=/root vncserver -geometry 1150x900' >> /etc/rc.local
 
 echo "start opengenera under vnc"
 if [[ ! -f "/root/.vnc/genera-host:1.pid" ]]; then
-  vncserver -geometry 1150x900
+  HOME=/root sudo vncserver -geometry 1150x900
 fi

@@ -21,5 +21,16 @@ sleep 2
 xterm &
 
 cd /var/lib/symbolics
-xterm -e /var/lib/symbolics/run-genera &
+/var/lib/symbolics/run-genera &
 
+#
+# This is a terrible hack. For reasons as yet unknown, the
+# first time Genera is launched after starting vncserver,
+# it comes up into a partially cold-booted state that is
+# unusable. At least for me, this happens 100% of the time.
+# Restarting it, likewise, always gets it running.
+#
+
+sleep 5
+
+exec /usr/local/bin/restart-genera &
