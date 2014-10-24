@@ -49,7 +49,7 @@ VBOX_VERSION=$(cat /home/vagrant/.vbox_version)
 cd /tmp
 wget http://download.virtualbox.org/virtualbox/$VBOX_VERSION/VBoxGuestAdditions_$VBOX_VERSION.iso
 mount -o loop VBoxGuestAdditions_$VBOX_VERSION.iso /mnt
-sh /mnt/VBoxLinuxAdditions.run
+sh /mnt/VBoxLinuxAdditions.run || true
 umount /mnt
 
 rm VBoxGuestAdditions_$VBOX_VERSION.iso
@@ -75,7 +75,8 @@ echo "Adding a 2 sec delay to the interface up, to make the dhclient happy"
 echo "pre-up sleep 2" >> /etc/network/interfaces
 
 mv /usr/bin/sudo /usr/bin/sudo-real
-tee /usr/bin/sudo <<'LITERAL'
+(cat <<'LITERAL' > /usr/bin/sudo
+#!/bin/sh
 while 
   case "$@" in 
     '') false 
@@ -94,6 +95,7 @@ done
 
 /usr/bin/sudo-real $arglist || exit $?
 LITERAL
+) && chmod a+x /usr/bin/sudo
 
 # Zero out the free space to save space in the final image:
 dd if=/dev/zero of=/EMPTY bs=1M || rm -f /EMPTY || true
