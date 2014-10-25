@@ -17,7 +17,7 @@ Veewee::Definition.declare({
     'fb=false debconf/frontend=noninteractive ',
     'console-setup/ask_detect=false console-setup/modelcode=pc105 console-setup/layoutcode=us ',
     'initrd=/install/initrd.gz -- <Enter>'
-],
+  ],
   :kickstart_port => "7122",
   :kickstart_timeout => "10000",
   :kickstart_file => "preseed.cfg",

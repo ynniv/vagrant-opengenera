@@ -2,7 +2,7 @@
 
 set -e
 
-date > /etc/vagrant_box_build_time
+date > /etc/vagrnat_box_build_time
 
 # ideally this would be excluded in the preseed
 sed -i.bak 's/^.*cdrom.*$//g' /etc/apt/sources.list
@@ -12,6 +12,55 @@ cat /etc/apt/sources.list
 apt-cache search linux-headers
 apt-cache search zlib1g-dev
 
+# Install NIS for Genera-to-Linux authentication
+
+# The first step is to migrate passwords to crypt (from MD5)
+# and away from shadow passwords/groups (Genera can't support them)
+
+sed -i -e 's/obscure md5/obscure/' /etc/pam.d/common-password
+pwunconv
+grpunconv
+
+# We need to re-set 'root' and 'vagrant' passwords
+# to 'vagrant', since we changed from md5 to crypt
+
+sed -r -i -e 's/^root:[^\:]+:/root:NmtEjLX7mwMRw:/' /etc/passwd
+sed -r -i -e 's/^vagrant:[^\:]+:/vagrant:LropGSyjPBX2s:/' /etc/passwd
+
+# Temporarily set our host name to 'genera-host' so ypinit
+# will pick it up correctly
+hostname genera-host
+
+# Now we make sure NIS doesn't start immediately after install.
+# This is to prevent an annoying 2-minute long hang.
+cat > /usr/sbin/policy-rc.d << EOF
+#!/bin/sh
+echo "All runlevel operations denied by policy" >&2
+exit 101
+EOF
+chmod +x /usr/sbin/policy-rc.d
+
+# Now set the NIS domainname
+echo 'genera' > /etc/defaultdomain
+
+# ... and install non-interactively
+DEBIAN_FRONTEND=noninteractive apt-get install -q -y nis
+
+# make sure we're the master NIS server
+sed -i -e 's/NISSERVER=false/NISSERVER=master/' /etc/default/nis
+sed -i -e 's/NISCLIENT=true/NISCLIENT=false/' /etc/default/nis
+
+# This will look like it failed with some errors, but it's successful,
+# don't worry.
+cd /var/yp
+make
+
+# Now we can get rid of that policy file...
+rm -f /usr/sbin/policy-rc.d
+
+# OK, now we can authenticate against the Linux host in Genera when we
+# next boot!
+
 #Updating the box
 apt-get -y install linux-headers-$(uname -r) build-essential
 apt-get -y install zlib1g-dev libssl-dev libreadline5-dev nfs-common
@@ -20,21 +69,6 @@ apt-get clean
 #Setting up sudo
 cp /etc/sudoers /etc/sudoers.orig
 sed -i -e 's/%admin ALL=(ALL) ALL/%admin ALL=NOPASSWD:ALL/g' /etc/sudoers
-
-#Installing ruby
-#wget http://rubyforge.org/frs/download.php/71096/ruby-enterprise-1.8.7-2010.02.tar.gz
-RUBY_VERSION=ruby-enterprise-1.8.7-2012.02
-wget http://rubyenterpriseedition.googlecode.com/files/${RUBY_VERSION}.tar.gz
-tar xzvf ${RUBY_VERSION}.tar.gz
-mkdir -p /opt/ruby/lib/ruby/gems/1.8/gems
-./${RUBY_VERSION}/installer -a /opt/ruby --no-dev-docs --dont-install-useful-gems
-echo 'PATH=$PATH:/opt/ruby/bin/'>> /etc/profile
-rm -rf ./${RUBY_VERSION}/
-rm ${RUBY_VERSION}.tar.gz
-
-#Installing chef & Puppet
-/opt/ruby/bin/gem install chef --no-ri --no-rdoc
-/opt/ruby/bin/gem install puppet --no-ri --no-rdoc
 
 #Installing vagrant keys
 mkdir /home/vagrant/.ssh
@@ -74,6 +108,8 @@ rm /etc/udev/rules.d/75-persistent-net-generator.rules
 echo "Adding a 2 sec delay to the interface up, to make the dhclient happy"
 echo "pre-up sleep 2" >> /etc/network/interfaces
 
+# Make sure we can run sudo that doesn't support the '-E' flag used by
+# Vagrant
 mv /usr/bin/sudo /usr/bin/sudo-real
 (cat <<'LITERAL' > /usr/bin/sudo
 #!/bin/sh
