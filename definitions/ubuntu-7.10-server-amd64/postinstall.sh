@@ -96,6 +96,7 @@ done
 
 /usr/bin/sudo-real $arglist || exit $?
 LITERAL
+chmod a+x /usr/bin/sudo
 
 # Zero out the free space to save space in the final image:
 dd if=/dev/zero of=/EMPTY bs=1M || rm -f /EMPTY || true
