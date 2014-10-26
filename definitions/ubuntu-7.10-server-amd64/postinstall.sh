@@ -2,6 +2,8 @@
 
 set -e
 
+echo "POSTINSTALL BEGIN"
+
 date > /etc/vagrant_box_build_time
 
 # ideally this would be excluded in the preseed
@@ -49,7 +51,7 @@ VBOX_VERSION=$(cat /home/vagrant/.vbox_version)
 cd /tmp
 wget http://download.virtualbox.org/virtualbox/$VBOX_VERSION/VBoxGuestAdditions_$VBOX_VERSION.iso
 mount -o loop VBoxGuestAdditions_$VBOX_VERSION.iso /mnt
-sh /mnt/VBoxLinuxAdditions.run
+sh /mnt/VBoxLinuxAdditions.run || true # This will fail if X11 is not installed (it is currently not installed)
 umount /mnt
 
 rm VBoxGuestAdditions_$VBOX_VERSION.iso
@@ -97,5 +99,7 @@ LITERAL
 
 # Zero out the free space to save space in the final image:
 dd if=/dev/zero of=/EMPTY bs=1M || rm -f /EMPTY || true
+
+echo "POSTINSTALL COMPLETE"
 
 exit
