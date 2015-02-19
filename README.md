@@ -1,10 +1,10 @@
-# OpenGenera 2.0 Virtual Machine Environment
+# Retrocomputing: Genera Lisp Machine
 
 ## About
 
-Runs "opengenera2" on Ubuntu 7.10 inside virtualbox using vagrant, veewee, and chef. An old version of Ubuntu is required due to a "feature" of X11 being fixed in newer versions.
+Runs "opengenera2" (poorly) on Ubuntu 7.10 inside virtualbox using vagrant, veewee, and chef. The result is not especially stable, but sufficient for the casual explorer. An old version of Ubuntu is required due to a "feature" of X11 being fixed in newer versions.
 
-This *does not include* genera. It requires that you supply a bzip2 tar archive named opengenera.tar.bz2 with the (abridged) files listed in notes/opengenera2.tar.list.
+This repository *does not include* genera. It requires that you supply a bzip2 tar archive named opengenera.tar.bz2 with the (abridged) files listed in notes/opengenera2.tar.list.
 
 ## Updating
 
