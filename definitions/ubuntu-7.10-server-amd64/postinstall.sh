@@ -34,10 +34,6 @@ echo 'PATH=$PATH:/opt/ruby/bin/'>> /etc/profile
 rm -rf ./${RUBY_VERSION}/
 rm ${RUBY_VERSION}.tar.gz
 
-#Installing chef & Puppet
-/opt/ruby/bin/gem install chef --no-ri --no-rdoc
-/opt/ruby/bin/gem install puppet --no-ri --no-rdoc
-
 #Installing vagrant keys
 mkdir /home/vagrant/.ssh
 chmod 700 /home/vagrant/.ssh
