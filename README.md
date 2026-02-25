@@ -1,3 +1,5 @@
+(if you're watching this repo you probably want to check out https://github.com/ynniv/modus)
+
 # Retrocomputing: Genera Lisp Machine
 
 ## About
